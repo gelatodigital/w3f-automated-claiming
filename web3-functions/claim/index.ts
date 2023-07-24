@@ -47,15 +47,13 @@ Web3Function.onRun(async (context: Web3FunctionContext) => {
     return { canExec: false, message: "Airdrop distributor not supported" };
 
   const airdrop = new ethers.Contract(
-    //plan.value.airdrop, ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    "0x9155497EAE31D432C0b13dBCc0615a37f55a2c87",
+    plan.value.airdrop,
     airdropAbi,
     provider
   ) as IAirdropDistributor;
 
   const claim = await merkleProof[plan.value.airdrop](
-    //contractAddress, ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    "0xc38c5f97B34E175FFd35407fc91a937300E33860",
+    contractAddress,
     await airdrop.merkleRoot()
   );
 
