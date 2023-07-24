@@ -1,86 +1,42 @@
-# Web3 Function Automated Bribing
+# Web3 Function Automated Airdrop Claiming
 
-This project demonstrates automated bribing with configurable bribe plans stored on-chain.
+This project demonstrates automated airdrop claiming with configurable plans stored on-chain.
 The plans are periodically executed with off-chain data by a Web3 Function when user-defined criteria are met.
 
-> **Warning**  
-> The documentation has not yet been updated to reflect the most recent release.
+## Creating a plan
 
-## Creating a bribe plan
+Plans can be added using `createPlan` with the following arguments:
 
-Plans can be added using either `addPlan` or `addPlanAll`.
-The former bribes a fixed amount of tokens every epoch whereas the latter bribes all available tokens every epoch.
-Arguments for the respective functions are the following:
-
-1. `addPlan`
-   - Hidden Hand briber (e.g., Balancer, Aura)
-   - Gauge (e.g., bb-g-usd)
-   - Token (e.g., Gear)
-   - Amount (Bribe per execution/epoch)
-   - Interval (Between executions in seconds)
-   - Start (Starting timestamp)
-   - Epochs (Total number of executions)
-   - Unsafe ([See below](#guarantees))
-2. `addPlanAll`
-   - Hidden Hand briber (e.g., Balancer, Aura)
-   - Gauge (e.g., bb-g-usd)
-   - Token (e.g., Gear)
-   - Interval (Between executions in seconds)
-   - Start (Starting timestamp)
-   - Epochs (Total number of executions)
+- Airdrop Distributor
+- Recipient (rewards recipient)
+- Interval (Between executions in seconds)
+- Start (Starting timestamp)
 
 > **Note**  
 > Plans can be scheduled in advance by specifying a starting timestamp out in the future.
 
-Plans are identified by a `bytes32` key which is derived by [hashing its attributes](https://github.com/gelatodigital/w3f-automated-bribing/blob/main/contracts/Briber/Briber.sol#L247-L251).  
+Plans are identified by a `bytes32` key which is derived by [hashing its attributes](https://github.com/gelatodigital/w3f-automated-claiming/blob/main/contracts/Claimer/Claimer.sol#L86).  
 This implicitly prevents the creation of duplicate plans.
 
-## Removing a bribe plan
+## Removing a plan
 
-There are three ways for a plan to be removed:
+Plan can be removed using `removePlan` specified by their unique `bytes32` identifier key.
 
-1. Calling `removePlan`
-   - Frees up its remaining allocated tokens
-   - Emits `PlanRemoved`
-2. Plan Completion
-   - Plan has no epochs remaining
-   - No tokens to free up since they will have all been spent
-   - Emits `PlanCompleted`
-3. Plan Cancellation
-   - Plan has insufficient tokens to bribe
-   - It is gracefully removed and its remaining tokens are freed up
-   - This can only occur if the `unsafe=true` override was used
-   - Emits `PlanCancelled`
+## Claiming
 
-## Executing a bribe
-
-The Web3 Function will periodically fetch all bribe plans from the contract.
-Once it finds a plan scheduled for execution, it translates its `gauge address` to a `proposal hash` by performing off-chain computation.
-The translation is protocol specific and is defined in [gaugeToProposal](https://github.com/gelatodigital/w3f-automated-bribing/blob/main/web3-functions/bribe/gaugeToProposal.ts).
+The Web3 Function will periodically fetch all plans from the contract.
+Once it finds a plan scheduled for execution, it fetches the current Merkle root and corresponding proof by performing off-chain computation.
+The operation is protocol specific and is defined in [merkleProof](https://github.com/gelatodigital/w3f-automated-claiming/blob/main/web3-functions/claim/merkleProof.ts).
 Handlers are modular by design to allow for easy implementation/support of additional protocols.
 
-The Web3 Function executes at most one bribe per run which prevents it from exceeding request/resource limits.
+The Web3 Function claims at most one airdrop per run preventing it from exceeding request/resource limits.
 This does however allow plans with short intervals to starve others since iterating the plans array sequentially introduces bias (Plans at the start will always be evaluated first).
-To remove bias, the Web3 Function first shuffles the array before iterating.
-
-## Guarantees
-
-Whenever a new plan is added the tokens it requires are allocated to it and are kept track of in a mapping.
-This ensures that multiple plans can coexist and execute in parallel without stealing tokens from one another.
-The contract prevents the creation of plans which have insufficient tokens to run until completion and prevents the withdrawal of tokens in use by existing plans.
-
-> **Note**  
-> `addPlanAll` is inherently safe as its plans bribe all remaining unallocated tokens.
-
-This behaviour can be overridden with `unsafe=true` in `addPlan` and `withdrawERC20`
-
-> **Warning**  
-> Using this override voids the guarantees outlined above and may lead to plan cancellation.
+This can be avoided by randomising the executable plans but the tradeoff is that we lose strict sequential ordering.
 
 ## Deployment
 
 > **Warning**  
-> Contracts are not audited by a third-party. Please use at your own discretion.
+> Contracts are not audited by a third party. Please use at your own discretion.
 
 1. Install dependencies
    ```
@@ -96,7 +52,7 @@ This behaviour can be overridden with `unsafe=true` in `addPlan` and `withdrawER
    ```
 4. Deploy contracts
    ```
-   yarn run hardhat deploy --tags Briber --network ethereum
+   yarn run hardhat deploy --tags Claimer --network ethereum
    ```
 5. Deploy the W3F to IPFS and create a W3F task
    ```
@@ -106,23 +62,4 @@ This behaviour can be overridden with `unsafe=true` in `addPlan` and `withdrawER
    ```
    yarn run hardhat etherscan-verify --network ethereum
    ```
-7. Deposit `ETH` into `Briber` contract for fee payment
-
-## Testing
-
-1. Install dependencies
-   ```
-   yarn install
-   ```
-2. Compile smart contracts
-   ```
-   yarn run hardhat compile
-   ```
-3. Edit `.env`
-   ```
-   cp .env.example .env
-   ```
-4. Run unit tests
-   ```
-   yarn run hardhat test
-   ```
+7. Deposit `ETH` into `Claimer` contract for fee payment
