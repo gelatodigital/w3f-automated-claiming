@@ -25,6 +25,7 @@ Web3Function.onRun(async (context: Web3FunctionContext) => {
   const { contractAddress } = verifyUserArgs(userArgs);
 
   const provider = multiChainProvider.default();
+
   const claimer = new ethers.Contract(
     contractAddress,
     claimerAbi,

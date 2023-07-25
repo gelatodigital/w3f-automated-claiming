@@ -8,7 +8,7 @@ interface IUserArgs {
 const verifyUserArgs = (args: Web3FunctionUserArgs): IUserArgs => {
   const contractAddress = args.contractAddress as string;
   if (!ethers.utils.isAddress(contractAddress))
-    throw "verifyUserArgs: Claimer invalid address";
+    throw "verifyUserArgs: invalid contract address";
 
   return { contractAddress };
 };

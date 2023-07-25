@@ -49,11 +49,6 @@ const config: HardhatUserConfig = {
       url: RPC_PROVIDER,
       accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
-    mumbai: {
-      chainId: 80001,
-      url: "https://polygon-mumbai.gateway.tenderly.co",
-      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
-    },
   },
   verify: {
     etherscan: {

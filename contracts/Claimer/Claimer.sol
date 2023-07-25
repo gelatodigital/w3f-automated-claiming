@@ -22,14 +22,12 @@ contract Claimer is AutomateReady, Ownable, Pausable {
     event RemovedPlan(bytes32 indexed key, Plan plan);
     event Deposit(address indexed from, uint256 indexed amount);
     event Withdraw(address indexed to, uint256 indexed amount);
-
-    event Claimed(bytes32 indexed key, uint256 indexed amount, Plan plan);
-
     event WithdrawERC20(
         address indexed to,
         IERC20 indexed token,
         uint256 indexed amount
     );
+    event Claimed(bytes32 indexed key, uint256 indexed amount, Plan plan);
 
     // solhint-disable-next-line no-empty-blocks
     constructor() AutomateReady(AUTOMATE, msg.sender) {}
@@ -59,7 +57,7 @@ contract Claimer is AutomateReady, Ownable, Pausable {
 
         require(
             address(airdrop) != address(0),
-            "Claimer.createPlan: invalid airdrop"
+            "Claimer.createPlan: invalid airdrop distributor"
         );
 
         // solhint-disable-next-line not-rely-on-time
