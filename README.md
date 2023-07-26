@@ -15,7 +15,7 @@ Plans can be added using `createPlan` with the following arguments:
 > **Note**  
 > Plans can be scheduled in advance by specifying a starting timestamp out in the future.
 
-Plans are identified by a `bytes32` key which is derived by [hashing its attributes](https://github.com/gelatodigital/w3f-automated-claiming/blob/main/contracts/Claimer/Claimer.sol#L86).  
+Plans are identified by a `bytes32` key which is derived by [hashing its attributes](https://github.com/gelatodigital/w3f-automated-claiming/blob/main/contracts/Claimer/Claimer.sol#L84).  
 This implicitly prevents the creation of duplicate plans.
 
 ## Removing a plan
@@ -31,7 +31,7 @@ Handlers are modular by design to allow for easy implementation/support of addit
 
 The Web3 Function claims at most one airdrop per run preventing it from exceeding request/resource limits.
 This does however allow plans with short intervals to starve others since iterating the plans array sequentially introduces bias (Plans at the start will always be evaluated first).
-This can be avoided by randomising the executable plans but the tradeoff is that we lose strict sequential ordering.
+This can be avoided by randomising the executable plans but the tradeoff is losing strict sequential ordering.
 
 ## Deployment
 
