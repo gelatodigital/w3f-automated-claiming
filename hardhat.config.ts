@@ -42,6 +42,7 @@ const config: HardhatUserConfig = {
     hardhat: {
       forking: {
         url: RPC_PROVIDER,
+        blockNumber: 17844146,
       },
     },
     ethereum: {
