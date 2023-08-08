@@ -102,7 +102,7 @@ contract Claimer is AutomateReady, Ownable, Pausable {
     function claim(
         bytes32 key,
         uint256 index,
-        uint256 amount,
+        uint256 totalAmount,
         bytes32[] calldata merkleProof
     ) external onlyDedicatedMsgSender whenNotPaused {
         (uint256 fee, address feeToken) = _getFeeDetails();
@@ -114,10 +114,12 @@ contract Claimer is AutomateReady, Ownable, Pausable {
         // (nextExec - firstExec) % interval == 0
         plan.nextExec += plan.interval;
 
-        plan.airdrop.claim(index, address(this), amount, merkleProof);
-        plan.airdrop.token().transfer(plan.recipient, amount);
+        uint256 claimed = totalAmount - plan.airdrop.claimed(address(this));
 
-        emit Claimed(key, amount, plan);
+        plan.airdrop.claim(index, address(this), totalAmount, merkleProof);
+        plan.airdrop.token().transfer(plan.recipient, claimed);
+
+        emit Claimed(key, claimed, plan);
     }
 
     /**

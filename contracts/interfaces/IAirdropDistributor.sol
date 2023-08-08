@@ -11,6 +11,8 @@ interface IAirdropDistributor {
         bytes32[] calldata merkleProof
     ) external;
 
+    function claimed(address account) external view returns (uint256);
+
     function token() external view returns (IERC20);
 
     function merkleRoot() external view returns (bytes32);
