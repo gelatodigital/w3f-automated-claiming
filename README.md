@@ -12,7 +12,7 @@ Plans can be added using `createPlan` with the following arguments:
 - Interval (Between executions in seconds)
 - Start (Starting timestamp)
 
-> **Note**  
+> [!NOTE]
 > Plans can be scheduled in advance by specifying a starting timestamp out in the future.
 
 Plans are identified by a `bytes32` key which is derived by [hashing its attributes](https://github.com/gelatodigital/w3f-automated-claiming/blob/main/contracts/Claimer/Claimer.sol#L84).  
@@ -35,7 +35,7 @@ This can be avoided by randomising the executable plans but the tradeoff is losi
 
 ## Deployment
 
-> **Warning**  
+> [!WARNING]
 > Contracts are not audited by a third party. Please use at your own discretion.
 
 1. Install dependencies
